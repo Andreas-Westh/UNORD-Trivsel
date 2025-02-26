@@ -50,6 +50,28 @@ query                   <- '{
    "side": 1
 }'
 
+query                   <- '{
+   "område": "GYM",
+   "emne": "OVER",
+   "underemne": "OVEREX",
+   "nøgletal": [
+      "Antal elever - Tilgang"
+   ],
+   "detaljering": [
+      "[Dato].[Skoleår]",
+      "[Uddannelse].[Uddannelsesymbol]"
+   ],
+   "filtre": {
+      "[Institution].[Institution]": [
+         "U/NORD"
+      ]
+   },
+   "indlejret": false,
+   "tomme_rækker": false,
+   "formattering": "json",
+   "side": 1
+}'
+
 #Her ændres formatet i JSON-strengen vha. escape karakterer, så API'et kan læse JSON koden
 format_query            <- gsub('"', '\"', query)
 
@@ -83,3 +105,10 @@ Tilgang_2023$Antal_Tilgnag <- as.numeric(Tilgang_2023$Antal_Tilgnag)
 Tilgang_aggregated <- Tilgang_2023 %>% group_by(Uddannelsessymbol) %>%
                             summarise(sum(Antal_Tilgnag))
 # This should be 620 Hhx and 178 Htx
+# When using the full query, I get 
+#                              Hhx: 4912
+#                              Htx: 1360
+# When using the test query, I get 
+#                              Hhx: 629
+#                              Htx: 179
+
