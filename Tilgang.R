@@ -104,6 +104,21 @@ colnames(Tilgang_2023) <- c("Uddannelsessymbol","Antal_Tilgnag")
 Tilgang_2023$Antal_Tilgnag <- as.numeric(Tilgang_2023$Antal_Tilgnag)
 Tilgang_aggregated <- Tilgang_2023 %>% group_by(Uddannelsessymbol) %>%
                             summarise(sum(Antal_Tilgnag))
+bar_data <- setNames(Tilgang_aggregated$`sum(Antal_Tilgnag)`, Tilgang_aggregated$Uddannelsessymbol)
+
+bar_positions <- barplot(bar_data, 
+                         las=2, 
+                         col="lightblue", 
+                         main="Antal Tilgang per Uddannelsessymbol", 
+                         xlab="Uddannelsessymbol", 
+                         ylab="Antal Tilgang")
+
+text(x = bar_positions, 
+     y = bar_data, 
+     label = bar_data, 
+     pos = 1,   
+     cex = 0.8, 
+     col = "black")
 # This should be 620 Hhx and 178 Htx
 # When using the full query, I get 
 #                              Hhx: 4912
