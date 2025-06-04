@@ -21,32 +21,25 @@ auth_key                <- paste('Bearer', api_key)
 query                   <- '{
    "område": "GYM",
    "emne": "TRIV",
-   "underemne": "INDIINST",
+   "underemne": "INDIBAG",
    "nøgletal": [
       "Trivselsvar, \\"Jeg er glad for at gå i skole\\"",
       "Indikatorsvar",
       "Indikatorsvar - Landstal"
    ],
    "detaljering": [
+      "[Alder].[Alder]",
+      "[Herkomst].[Herkomst]",
+      "[Institution].[Afdeling]",
+      "[Institution].[Afdelingsnummer]",
+      "[Institution].[Beliggenhedskommune]",
+      "[Institution].[Beliggenhedsregion]",
+      "[Institution].[Institution]",
+      "[Køn].[Køn]",
       "[TrivselIndikator].[Indikator]",
       "[Uddannelse].[Uddannelsessymbol]",
       "[År].[År]"
    ],
-   "filtre": {
-      "[Institution].[Afdeling]": [
-         "U/NORD",
-         "U/NORD Frederikssund Tekniske Gymnasium",
-         "U/NORD Helsingør, Rasmus Knudsens Vej",
-         "U/NORD Hillerød Handelsgymnasium",
-         "U/NORD Hillerød Teknisk Gymnasium",
-         "U/NORD Lyngby Gymnasium"
-      ],
-      "[Uddannelse].[Uddannelsessymbol]": [
-         "Stx",
-         "Hhx",
-         "Htx"
-      ]
-   },
    "indlejret": false,
    "tomme_rækker": false,
    "formattering": "json",
@@ -75,38 +68,55 @@ while (api_response_length > 0) {
 Dataudtraek             <- do.call(rbind, data)
 
 
+<<<<<<< HEAD:UNORD-Trivsel.R
 ############################################
 ############## Data Rensning ##############
 ############################################
+=======
+df <- Dataudtraek
+
+>>>>>>> b1be374 (new data retrieval):Elev-Trivsel.R
 #Ændre navne, til noget mere læsbart
-colnames(Dataudtraek)[1] = "Indikator"
-colnames(Dataudtraek)[2] = "Uddannelse"
-colnames(Dataudtraek)[3] = "År"
-colnames(Dataudtraek)[4] = "Jeg.er.glad.for.at.gå.i.skole"
-colnames(Dataudtraek)[6] = "Indikatorsvar.Landstal"
-
-
-### Loop for opdeling af Dataudtraek i individuelle dataframes
-# Få unikke indikatorer
-unikke_indikatorer <- unique(Dataudtraek$Indikator)
-
-# Loop igennem hver indikator
-for (indikator in unikke_indikatorer) {
+colnames(df)[1] = "Alder"
+  colnames(df)[2] = "Herkomst"
+  colnames(df)[3] = "Afdeling"
+  colnames(df)[4] = "Afdelingsnummer"
+  colnames(df)[5] = "Beliggenhedskommune"
+  colnames(df)[6] = "Beliggenhedsregion"
+  colnames(df)[7] = "Institution"
+  colnames(df)[8] = "Køn"
+  colnames(df)[9] = "Indikator"
+  colnames(df)[10] = "Uddannelsessymbol"
+  colnames(df)[11] = "År"
+  colnames(df)[12] = "GladForSkole"  
+  colnames(df)[14] = "Landstal"  
   
-  # Filtrér data for hver unik indikator
-  indikator_data <- Dataudtraek[Dataudtraek$Indikator == indikator, ]
-  
-  # Pivot data, så uddannelserne bliver til kolonner
-  bred_data <- reshape(indikator_data, 
-                       idvar = "År", 
-                       timevar = "Uddannelse", 
-                       direction = "wide")
-  
-  # Dynamisk skab en ny dataframe for hver indikator
-  assign(paste0("Data_", indikator), bred_data)
-}
+#Datacleaning
+df$GladForSkole <- as.numeric(gsub(",",".",df$GladForSkole))
+df$Indikatorsvar <- as.numeric(gsub(",",".",df$Indikatorsvar))
+df$Landstal <- as.numeric(gsub(",",".",df$Landstal))
+
+library(plotly)
+plot_ly(df, 
+        x = ~GladForSkole, 
+        y = ~Indikatorsvar, 
+        z = ~Landstal, 
+        color = ~Indikator,
+        colors = c("red", "blue", "green"), 
+        type = "scatter3d", 
+        mode = "markers",
+        text = ~paste("Indikator: ", as.character(Indikator), "<br>",
+                      "Afdeling: ", as.character(Afdeling), "<br>"),
+        hoverinfo = "text") %>%
+  layout(title = "title",
+         scene = list(
+           xaxis = list(title = "Jeg er glad for at gå i skole"),
+           yaxis = list(title = "Indikatorsvar"),
+           zaxis = list(title = "Landsgennemsnit")
+         ))
 
 
+<<<<<<< HEAD:UNORD-Trivsel.R
 
 ############################################################################################################################
 ##### Dette skal helst ændres, så det ikke er en seperat data.frame, men laves i Data_Mobning
@@ -139,3 +149,5 @@ ggplot(Data_combined, aes(x = År, y = Mobning, color = Uddannelse, shape = Udda
        color = "Uddannelse", shape = "Uddannelse") +
   theme_minimal() +
   theme(legend.position = "bottom")
+=======
+>>>>>>> b1be374 (new data retrieval):Elev-Trivsel.R
